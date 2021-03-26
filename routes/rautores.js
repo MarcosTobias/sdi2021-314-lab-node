@@ -6,4 +6,13 @@ module.exports = function(app, swig) {
 
         res.send(respuesta);
     });
+
+    app.post("/autor", function(req, res) {
+        let nombre = req.body.nombre == "" ? "Nombre no enviado en la petición" : req.body.nombre;
+        let grupo = req.body.grupo == "" ? "Grupo no enviado en la petición" : req.body.grupo;
+        let rol = req.body.rol == "" ? "Rol no enviado en la petición" : req.body.rol;
+
+        res.send("Autor agregado: " + "<br>" + "Nombre: " + nombre + "<br>"
+                        + "Grupo: " + grupo + "<br>" + "Rol: " + rol);
+    });
 };
