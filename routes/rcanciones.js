@@ -51,7 +51,7 @@ module.exports = function(app, swig) {
                     + " Precio: " + req.body.precio);
     });
 
-    app.get("/promo", function(req, res) {
+    app.get("/promo*", function(req, res) {
         res.send("Respuesta patrón promo* ");
     });
 };
