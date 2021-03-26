@@ -20,7 +20,8 @@ module.exports = function(app, swig) {
             nombre: "TeclistaGenerico",
             grupo: "grupoGenerico5",
             rol: "Teclista"
-        }]
+        }];
+
         let respuesta = swig.renderFile("views/autores.html", {
             autores: autores
         });
@@ -29,8 +30,20 @@ module.exports = function(app, swig) {
     });
 
     app.get("/autores/agregar", function(req, res) {
-        let respuesta = swig.renderFile("views/autores-agregar.html", {
+        let roles = [{
+            texto: "Cantante"
+        }, {
+            texto: "Batería"
+        }, {
+            texto: "Guitarrista"
+        }, {
+            texto: "Bajista"
+        }, {
+            texto: "Teclista"
+        }];
 
+        let respuesta = swig.renderFile("views/autores-agregar.html", {
+            roles: roles
         });
 
         res.send(respuesta);
