@@ -3,6 +3,7 @@ let app = express();
 
 let swig = require("swig");
 let mongo = require("mongodb");
+let fileUpload = require("express-fileupload");
 
 
 let connection_url = "mongodb://admin:verySecurePassword@tiendamusica-shard-00-00.ce5h9.mongodb.net:27017,tiendamusica-shard-00-01.ce5h9.mongodb.net:27017,tiendamusica-shard-00-02.ce5h9.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-o11010-shard-0&authSource=admin&retryWrites=true&w=majority";
@@ -10,6 +11,8 @@ let connection_url = "mongodb://admin:verySecurePassword@tiendamusica-shard-00-0
 let bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(fileUpload());
 
 app.use(express.static("public"));
 
