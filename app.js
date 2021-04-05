@@ -13,11 +13,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static("public"));
 
+let gestorBD = require("./modules/gestorBD.js");
+gestorBD.init(app, mongo);
+
 app.set("port", 8081);
 app.set("db", connection_url);
 
-require("./routes/rusuarios.js")(app, swig);
-require("./routes/rcanciones.js")(app, swig, mongo);
+require("./routes/rusuarios.js")(app, swig, gestorBD);
+require("./routes/rcanciones.js")(app, swig, gestorBD);
 require("./routes/rautores.js")(app, swig);
 
 app.listen(app.get("port"), function() {
