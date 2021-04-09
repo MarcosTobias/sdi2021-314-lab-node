@@ -19,4 +19,24 @@ module.exports = function (app, swig, gestorBD) {
             }
         });
     });
+
+    app.get("/comentario/borrar/:id", function (req, res) {
+        let criterio = {"_id": gestorBD.mongo.ObjectID(req.params.id)};
+
+        gestorBD.obtenerComentarios(criterio, function (comentarios) {
+            let cancionId = comentarios[0].cancion_id;
+
+            if(req.session.usuario != comentarios[0].autor)
+                res.send("No puedes borrar un comentario que no es tuyo");
+            else {
+                gestorBD.borrarComentario(criterio, function (success) {
+                    if (success == null) {
+                        res.send("Error borrando el comentario");
+                    } else {
+                        res.redirect("/cancion/" + cancionId.toString());
+                    }
+                });
+            }
+        });
+    });
 };
