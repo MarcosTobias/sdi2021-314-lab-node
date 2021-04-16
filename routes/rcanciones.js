@@ -13,8 +13,11 @@ module.exports = function (app, swig, gestorBD) {
 
         let respuesta = swig.renderFile("views/btienda.html", {
             vendedor: "Tienda de canciones",
-            canciones: canciones
+            canciones: canciones,
+            errores: req.session.errores
         });
+
+        req.session.errores = { mensaje: "", tipoMensaje: "" };
 
         res.send(respuesta);
     });
@@ -109,9 +112,8 @@ module.exports = function (app, swig, gestorBD) {
 
         gestorBD.obtenerCanciones(criterio, function (canciones) {
             if (canciones == null) {
-                res.redirect("/error" +
-                    "?error=Error al recuperar la canción." +
-                    "&tipoError=alert-danger ");
+                req.session.errores = { mensaje: "Error al recuperar la cancion", tipoMensaje: "text" };
+                res.redirect("/error");
             } else {
                 gestorBD.obtenerComentarios(comentario_criterio, function (comentarios) {
                     let comments = comentarios == null ? [] : comentarios;
@@ -121,8 +123,11 @@ module.exports = function (app, swig, gestorBD) {
                             {
                                 cancion: canciones[0],
                                 comentarios: comments,
-                                puedeComprar: !comprada
+                                puedeComprar: !comprada,
+                                errores: req.session.errores
                             });
+
+                        req.session.errores = { mensaje: "", tipoMensaje: "" };
 
                         res.send(respuesta);
                     });
@@ -139,8 +144,12 @@ module.exports = function (app, swig, gestorBD) {
             } else {
                 let respuesta = swig.renderFile('views/bcancionModificar.html',
                     {
-                        cancion: canciones[0]
+                        cancion: canciones[0],
+                        errores: req.session.errores
                     });
+
+                req.session.errores = { mensaje: "", tipoMensaje: "" };
+
                 res.send(respuesta);
             }
         });
@@ -163,9 +172,8 @@ module.exports = function (app, swig, gestorBD) {
                     }
                 });
             } else {
-                res.redirect("/error" +
-                    "?error=No puedes comprar una canción tuya o que ya hayas comprado" +
-                    "&tipoError=alert-danger ");
+                req.session.errores = { mensaje: "No puedes comprar una canción tuya o que ya hayas comprado", tipoMensaje: "text" };
+                res.redirect("/error");
             }
         })
     });
@@ -181,15 +189,13 @@ module.exports = function (app, swig, gestorBD) {
         }
         gestorBD.modificarCancion(criterio, cancion, function (result) {
             if (result == null) {
-                res.redirect("/error" +
-                    "?error=Error al modificar." +
-                    "&tipoError=alert-danger ");
+                req.session.errores = { mensaje: "Error al modificar", tipoMensaje: "text" };
+                res.redirect("/error");
             } else {
                 paso1ModificarPortada(req.files, id, function (result) {
                     if (result == null) {
-                        res.redirect("/error" +
-                            "?error=Error en la modificación" +
-                            "&tipoError=alert-danger ");
+                        req.session.errores = { mensaje: "Error en la modificación", tipoMensaje: "text" };
+                        res.redirect("/error");
                     } else {
                         res.redirect("/publicaciones");
                     }
@@ -217,17 +223,15 @@ module.exports = function (app, swig, gestorBD) {
                 let imagen = req.files.portada;
                 imagen.mv('public/portadas/' + id + '.png', function (err) {
                     if (err) {
-                        res.redirect("/error" +
-                            "?error=Error al subir la portada." +
-                            "&tipoError=alert-danger ");
+                        req.session.errores = { mensaje: "Error al subir la portada", tipoMensaje: "text" };
+                        res.redirect("/error");
                     } else {
                         if (req.files.audio != null) {
                             let audio = req.files.audio;
                             audio.mv('public/audios/' + id + '.mp3', function (err) {
                                 if (err) {
-                                    res.redirect("/error" +
-                                        "?error=Error al subir el audio." +
-                                        "&tipoError=alert-danger ");
+                                    req.session.errores = { mensaje: "Error al subir el audio", tipoMensaje: "text" };
+                                    res.redirect("/error");
                                 } else {
                                     res.redirect("/publicaciones");
                                 }
@@ -257,9 +261,8 @@ module.exports = function (app, swig, gestorBD) {
 
         gestorBD.obtenerCancionesPg(criterio, pg, function (canciones, total) {
             if (canciones == null) {
-                res.redirect("/error" +
-                    "?error=Error al listar." +
-                    "&tipoError=alert-danger ");
+                req.session.errores = { mensaje: "Error al listar", tipoMensaje: "text" };
+                res.redirect("/error");
             } else {
                 let ultimaPg = total / 4;
                 if (total % 4 > 0) { // Sobran decimales
@@ -275,8 +278,12 @@ module.exports = function (app, swig, gestorBD) {
                     {
                         canciones: canciones,
                         paginas: paginas,
-                        actual: pg
+                        actual: pg,
+                        errores: req.session.errores
                     });
+
+                req.session.errores = { mensaje: "", tipoMensaje: "" };
+
                 res.send(respuesta);
             }
         });
@@ -287,14 +294,17 @@ module.exports = function (app, swig, gestorBD) {
         let criterio = {autor: req.session.usuario};
         gestorBD.obtenerCanciones(criterio, function (canciones) {
             if (canciones == null) {
-                res.redirect("/error" +
-                    "?error=Error al listar." +
-                    "&tipoError=alert-danger ");
+                req.session.errores = { mensaje: "Error al listar", tipoMensaje: "text" };
+                res.redirect("/error");
             } else {
                 let respuesta = swig.renderFile('views/bpublicaciones.html',
                     {
-                        canciones: canciones
+                        canciones: canciones,
+                        errores: req.session.errores
                     });
+
+                req.session.errores = { mensaje: "", tipoMensaje: "" };
+
                 res.send(respuesta);
             }
         });
@@ -305,9 +315,8 @@ module.exports = function (app, swig, gestorBD) {
 
         gestorBD.obtenerCompras(criterio, function (compras) {
             if (compras == null) {
-                res.redirect("/error" +
-                    "?error=Error al listar." +
-                    "&tipoError=alert-danger ");
+                req.session.errores = { mensaje: "Error al listar", tipoMensaje: "text" };
+                res.redirect("/error");
             } else {
                 let cancionesCompradasIds = [];
                 for (i = 0; i < compras.length; i++) {
@@ -318,8 +327,12 @@ module.exports = function (app, swig, gestorBD) {
                 gestorBD.obtenerCanciones(criterio, function (canciones) {
                     let respuesta = swig.renderFile("views/bcompras.html",
                         {
-                            canciones: canciones
+                            canciones: canciones,
+                            errores: req.session.errores
                         });
+
+                    req.session.errores = { mensaje: "", tipoMensaje: "" };
+
                     res.send(respuesta);
                 })
             }

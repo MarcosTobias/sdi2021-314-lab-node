@@ -3,30 +3,8 @@
 {% block titulo %} Identificar usuario {% endblock %}
 
 {% block contenido_principal %}
-<h2>Identificación de usuario</h2>
-<div class="ml-2 error">
-    <script>
-        var error = getUrlParameter('error');
-        var tipoError = getUrlParameter('tipoError');
-        // Otra forma de recuperar los parametros de la url pero no compatible con IE
-        /* const params = new URLSearchParams(location.search);
-        var mensaje = params.get("mensaje");
-        var tipoMensaje = params.get("mensaje");*/
-        if (error !== "") {
-            if (tipoError === "") {
-                tipoError = 'alert-info';
-            }
-            $(".error")
-                .append("<p>" + error + " </p>");
-        }
-
-        function getUrlParameter(name) {
-            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-            var results = regex.exec(location.search);
-            return results === null ? '' :
-                decodeURIComponent(results[1].replace(/\+/g, ' '));
-        };
-    </script>
+<h2>Error</h2>
+<div class="ml-2">
+    <p class="{{ errores.tipoMensaje }}">{{ errores.mensaje }}</p>
 </div>
 {% endblock %}

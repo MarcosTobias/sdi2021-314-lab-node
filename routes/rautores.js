@@ -23,8 +23,11 @@ module.exports = function(app, swig) {
         }];
 
         let respuesta = swig.renderFile("views/autores.html", {
-            autores: autores
+            autores: autores,
+            errores: req.session.errores
         });
+
+        req.session.errores = { mensaje: "", tipoMensaje: "" };
 
         res.send(respuesta);
     });
@@ -43,8 +46,11 @@ module.exports = function(app, swig) {
         }];
 
         let respuesta = swig.renderFile("views/autores-agregar.html", {
-            roles: roles
+            roles: roles,
+            errores: req.session.errores
         });
+
+        req.session.errores = { mensaje: "", tipoMensaje: "" };
 
         res.send(respuesta);
     });
@@ -75,8 +81,11 @@ module.exports = function(app, swig) {
         autores = autores.filter(autor => autor.rol.toLowerCase()  === req.params.rol.toLowerCase());
 
         let respuesta = swig.renderFile("views/autores.html", {
-            autores: autores
+            autores: autores,
+            errores: req.session.errores
         });
+
+        req.session.errores = { mensaje: "", tipoMensaje: "" };
 
         res.send(respuesta);
     });

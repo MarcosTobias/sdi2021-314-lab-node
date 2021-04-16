@@ -3,9 +3,8 @@ module.exports = function (app, swig, gestorDB) {
         let criterio = {"_id": gestorDB.mongo.ObjectID(req.params.cancion_id)};
         gestorDB.obtenerCanciones(criterio, function (canciones) {
             if (canciones == null) {
-                res.redirect("/error" +
-                    "?error=Error al recuperar la canción." +
-                    "&tipoError=alert-danger ");
+                req.session.errores = { mensaje: "Error al recuperar la canción", tipoMensaje: "text" };
+                res.redirect("/error");
             } else {
                 let cancion = canciones[0];
 
@@ -33,7 +32,10 @@ module.exports = function (app, swig, gestorDB) {
             {
                 favoritos: req.session.favoritos,
                 total: total,
+                errores: req.session.errores
             });
+
+        req.session.errores = { mensaje: "", tipoMensaje: "" };
 
         res.send(respuesta);
     });
@@ -52,7 +54,10 @@ module.exports = function (app, swig, gestorDB) {
             {
                 favoritos: req.session.favoritos,
                 total: total,
+                errores: req.session.errores
             });
+
+        req.session.errores = { mensaje: "", tipoMensaje: "" };
 
         res.send(respuesta);
     });
