@@ -1,4 +1,17 @@
 module.exports = function(app, gestorBD) {
+    app.get("/api/cancion", function(req, res) {
+        gestorBD.obtenerCanciones( {} , function(canciones) {
+            if (canciones == null) {
+                res.status(500);
+                res.json({
+                    error : "se ha producido un error"
+                })
+            } else {
+                res.status(200);
+                res.send( JSON.stringify(canciones) );
+            }
+        });
+    });
 
     app.get("/api/cancion/:id", function(req, res) {
         let criterio = { "_id" : gestorBD.mongo.ObjectID(req.params.id)}
@@ -19,8 +32,10 @@ module.exports = function(app, gestorBD) {
     app.delete("/api/cancion/:id", function(req, res) {
         let criterio = { "_id" : gestorBD.mongo.ObjectID(req.params.id)}
 
+        let user = req.session.usuario;
+
         gestorBD.eliminarCancion(criterio,function(canciones){
-            if ( canciones == null ){
+            if ( canciones == null || canciones[0].autor !== user){
                 res.status(500);
                 res.json({
                     error : "se ha producido un error"
@@ -60,6 +75,8 @@ module.exports = function(app, gestorBD) {
 
         let criterio = {"_id": gestorBD.mongo.ObjectID(req.params.id)};
 
+        let user = req.session.user;
+
         let cancion = {}; // Solo los atributos a modificar
         if (req.body.nombre != null)
             cancion.nombre = req.body.nombre;
@@ -68,7 +85,7 @@ module.exports = function(app, gestorBD) {
         if (req.body.precio != null)
             cancion.precio = req.body.precio;
         gestorBD.modificarCancion(criterio, cancion, function (result) {
-            if (result == null) {
+            if (result == null || result[0].autor !== user) {
                 res.status(500);
                 res.json({
                     error: "se ha producido un error"
@@ -82,4 +99,33 @@ module.exports = function(app, gestorBD) {
             }
         });
     });
+
+    app.post("/api/autenticar/", function(req, res) {
+        let seguro = app.get("crypto").createHmac("sha256", app.get("clave"))
+            .update(req.body.password).digest("hex");
+
+        let criterio = {
+            email: req.body.email,
+            password: seguro
+        }
+
+        gestorBD.obtenerUsuarios(criterio, function(usuarios) {
+            if(usuarios === null || usuarios.length === 0) {
+                res.status(401);
+                res.json({
+                    autenticado: false
+                });
+            } else {
+                let token = app.get("jwt").sign(
+                    { usuario: criterio.email, tiempo: Date.now()/1000 },
+                        "secreto");
+
+                res.status(200);
+                res.json( {
+                    autenticado: true,
+                    token: token
+                })
+            }
+        })
+    })
 }
