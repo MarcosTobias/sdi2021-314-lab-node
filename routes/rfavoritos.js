@@ -3,7 +3,9 @@ module.exports = function (app, swig, gestorDB) {
         let criterio = {"_id": gestorDB.mongo.ObjectID(req.params.cancion_id)};
         gestorDB.obtenerCanciones(criterio, function (canciones) {
             if (canciones == null) {
-                res.send("Error recuperando la canción");
+                res.redirect("/error" +
+                    "?error=Error al recuperar la canción." +
+                    "&tipoError=alert-danger ");
             } else {
                 let cancion = canciones[0];
 

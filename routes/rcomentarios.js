@@ -13,7 +13,9 @@ module.exports = function (app, swig, gestorBD) {
 
         gestorBD.insertarComentario(comentario, function (id) {
             if (id == null) {
-                res.send("Error insertando el comentario");
+                res.redirect("/error" +
+                    "?error=Error insertando el comentario." +
+                    "&tipoError=alert-danger ");
             } else {
                 res.redirect("/cancion/" + comentario.cancion_id);
             }
@@ -27,11 +29,15 @@ module.exports = function (app, swig, gestorBD) {
             let cancionId = comentarios[0].cancion_id;
 
             if(req.session.usuario != comentarios[0].autor)
-                res.send("No puedes borrar un comentario que no es tuyo");
+                res.redirect("/error" +
+                    "?error=No se puede borrar un comentario que no es tuyo." +
+                    "&tipoError=alert-danger ");
             else {
                 gestorBD.borrarComentario(criterio, function (success) {
                     if (success == null) {
-                        res.send("Error borrando el comentario");
+                        res.redirect("/error" +
+                            "?error=Error borrando el comentario." +
+                            "&tipoError=alert-danger ");
                     } else {
                         res.redirect("/cancion/" + cancionId.toString());
                     }
